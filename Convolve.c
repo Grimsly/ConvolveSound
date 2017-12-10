@@ -90,55 +90,6 @@ int inWave(char* file)
 	return 1;
 }
 
-int outWave(char* file, float* newInput, int newSize)
-{
-	FILE* outFile = fopen(file, "wb");
-	if (outFile != NULL)
-	{
-		printf("\n Now Writing %s.\n", file);
-
-		fwrite(ChunkID, 1, 4, outFile);
-		fwrite(&ChunkSize, 1, 4, outFile);
-		fwrite(RIFFType, 1, 4, outFile);
-
-		fwrite(SubChunk1ID, 1, 4, outFile);
-		fwrite(&SubChunk1Size, 1, 4, outFile);
-		fwrite(&AudioFormat, 1, 2, outFile);
-		fwrite(&NumChannels, 1, 2, outFile);
-		fwrite(&SampleRate, 1, 4, outFile);
-		fwrite(&ByteRate, 1, 4, outFile);
-		fwrite(&BlockAlign, 1, 2, outFile);
-		fwrite(&BitsPerSample, 1, 2, outFile);
-
-		if (SubChunk1Size == 18)
-		{
-			short empty = 0;
-			fwrite(&empty, 1, 2, outFile);
-		}
-
-		fwrite(SubChunk2ID, 1, 4, outFile);
-		fwrite(&SubChunk2Size, 1, 4, outFile);
-
-		for (int i = 0; i < newSize; ++i)
-		{
-			newInput[i] = (newInput[i] / max_Sample);
-			short sample = (short)(newInput[i] * MAX_VAL);
-			fwrite(&sample, 1, bytes, outFile);
-		}
-
-		//clean up
-		free(newData);
-		fclose(outFile);
-		printf("Now Closing %s.\n", file);
-	}
-	else
-	{
-		printf("Couldn't open file\n");
-		return 0;
-	}
-	return 1;
-}
-
 int inIR(char* file){
 	FILE* input = fopen(file, "rb");
 	int subChunk2SizeIR;
@@ -185,6 +136,55 @@ int inIR(char* file){
 	}
 	else{
 		printf("File not available.\n");
+		return 0;
+	}
+	return 1;
+}
+
+int outWave(char* file, float* newInput, int newSize)
+{
+	FILE* outFile = fopen(file, "wb");
+	if (outFile != NULL)
+	{
+		printf("\n Now Writing %s.\n", file);
+
+		fwrite(ChunkID, 1, 4, outFile);
+		fwrite(&ChunkSize, 1, 4, outFile);
+		fwrite(RIFFType, 1, 4, outFile);
+
+		fwrite(SubChunk1ID, 1, 4, outFile);
+		fwrite(&SubChunk1Size, 1, 4, outFile);
+		fwrite(&AudioFormat, 1, 2, outFile);
+		fwrite(&NumChannels, 1, 2, outFile);
+		fwrite(&SampleRate, 1, 4, outFile);
+		fwrite(&ByteRate, 1, 4, outFile);
+		fwrite(&BlockAlign, 1, 2, outFile);
+		fwrite(&BitsPerSample, 1, 2, outFile);
+
+		if (SubChunk1Size == 18)
+		{
+			short empty = 0;
+			fwrite(&empty, 1, 2, outFile);
+		}
+
+		fwrite(SubChunk2ID, 1, 4, outFile);
+		fwrite(&SubChunk2Size, 1, 4, outFile);
+
+		for (int i = 0; i < newSize; ++i)
+		{
+			newInput[i] = (newInput[i] / max_Sample);
+			short sample = (short)(newInput[i] * MAX_VAL);
+			fwrite(&sample, 1, bytes, outFile);
+		}
+
+		//clean up
+		free(newData);
+		fclose(outFile);
+		printf("Now Closing %s.\n", file);
+	}
+	else
+	{
+		printf("Couldn't open file\n");
 		return 0;
 	}
 	return 1;
