@@ -316,10 +316,6 @@ int main(int argc, char* argv[])
     for (int i = 0; i < doubleMaxSize; i++)
 	{
 		complexIR[i] = 0.0;
-	}
-
-	for (int i = 0; i < doubleMaxSize; i++)
-	{
 		complexWave[i] = 0.0;
 	}
 
@@ -339,19 +335,17 @@ int main(int argc, char* argv[])
 	four1(complexWave-1, maxSizePow2, 1);
 	four1(complexIR-1, maxSizePow2, 1);
 
-	//allocate space for the output signal
 	double *complexOutput;
 	complexOutput = (double*)malloc(sizeof(double) *doubleMaxSize);
 
-	// complex multiplication of the input and ir response 
 	for (int i = 0; i < maxSizePow2; i++)
 	{
-		complexOutput[i * 2] = complexWave[i] * complexIR[i] - complexWave[i + 1] * complexIR[i + 1];
-	}
-
-	for (int i = 0; i < maxSizePow2; i++)
-	{
-		complexOutput[i * 2 + 1] = complexWave[i + 1] * complexIR[i] + complexWave[i] * complexIR[i + 1];
+        double wave1 = complexWave[i];
+        double wave2 = complexWave[i + 1];
+        double IR1 = complexIR[i];
+        double IR2 = complexIR[i + 1];
+		complexOutput[i * 2] = wave1 * IR1 - wave2 * IR2;
+		complexOutput[i * 2 + 1] = wave2 * IR1 + wave1 * IR2;
 	}
     
 	four1(complexOutput-1, maxSizePow2, 1);
